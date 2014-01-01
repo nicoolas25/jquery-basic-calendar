@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.4.0/moment-with-langs.min.js"></script>
+    <script src="jquery-basic-calendar.js"></script>
+    <script type="text/javascript">
+      $(function() {
+        moment.lang('fr');
+
+        var calendar = $("#calendar-widget").bCalendar({
+          begin: moment().date(1),
+          events: function(startAt, callback) {
+            callback([
+              { date: moment(startAt).add(10, "days"), title: "Event 1" },
+              { date: moment(startAt).add(20, "days"), title: "Event 2" }
+            ]);
+          }
+        });
+
+        calendar.on('eventClicked', function(_, clickedEvent) {
+          console.log("Click on event:", clickedEvent);
+          alert(clickedEvent.title);
+        });
+      });
+    </script>
+    <style type="text/css">
+      .bc-inactive { color: grey; }
+      .bc-next, .bc-prev { cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <div id="calendar-widget"></div>
+  </body>
+</html>
