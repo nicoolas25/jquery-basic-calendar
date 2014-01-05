@@ -1,11 +1,48 @@
 (function($) {
 
-  // Variables locales à notre plugin
+  //
+  // Fonctions utilitaires
+  //
 
-  var bCalendarInit, bCalendarMethodCall;
-  var rotate, headers, weekCount;
+  // Décale d'un indice vers la gauche le tableau et replace le premier élément
+  // en fin de tableau.
 
+  function rotate(array) {
+    var newArray;
+    newArray = array.slice(1)
+    newArray.push(array[0])
+    return newArray;
+  };
+
+  // La fonction headers retourne un tableau contenant les trois
+  // premières lettres de chaque jour de la semaine.
+
+  function headers() {
+    var weekdays = moment.langData(moment.lang())._weekdays;
+    return rotate($.map(weekdays, function(d){ return d.slice(0, 3); }));
+  };
+
+  // La fonction weekCount retourne le nombre de semaines a afficher
+  // dans un mois.
+
+  function weekCount(someMoment) {
+    var count, nextMonth, cursor;
+    count     = 0;
+    nextMonth = moment(someMoment).add(1, 'month');
+    cursor    = moment(someMoment).isoWeekday(1);
+
+    while(cursor.isBefore(nextMonth)) {
+      cursor = cursor.add(1, 'week');
+      count  = count + 1;
+    }
+
+    return count;
+  };
+
+
+  //
   // Comportement de notre widget
+  //
 
   function Calendar(container, options) {
     var _this = this;
@@ -113,7 +150,10 @@
     this.options.events(this.currentMoment, callback);
   }
 
-  bCalendarInit = function(options) {
+
+  // Fonctions de notre plugin
+
+  function bCalendarInit(options) {
 
     // Merge default params into options
 
@@ -126,7 +166,7 @@
     this.data('bCalendar', calendar);
   };
 
-  bCalendarMethodCall = function() {
+  function bCalendarMethodCall() {
     var calendar = this.data('bCalendar');
 
     if (calendar) {
@@ -138,7 +178,8 @@
     throw "Please init the bCalendar before calling methods on it.";
   };
 
-  // Accès via jQuery
+
+  // Branchement dans jQuery
 
   $.fn.bCalendar = function(optionsOrMethod) {
 
@@ -153,35 +194,6 @@
     // Permettre le chainage en retournant this
 
     return this;
-  };
-
-  // Fonctions d'aide sans réelle importance
-
-  rotate = function(array) {
-    var newArray;
-    newArray = array.slice(1)
-    newArray.push(array[0])
-    return newArray;
-  };
-
-  headers = function() {
-    var weekdays = moment.langData(moment.lang())._weekdays;
-    return rotate($.map(weekdays, function(d){ return d.slice(0, 3); }));
-  };
-
-
-  weekCount = function(someMoment) {
-    var count, nextMonth, cursor;
-    count     = 0;
-    nextMonth = moment(someMoment).add(1, 'month');
-    cursor    = moment(someMoment).isoWeekday(1);
-
-    while(cursor.isBefore(nextMonth)) {
-      cursor = cursor.add(1, 'week');
-      count  = count + 1;
-    }
-
-    return count;
   };
 
 })(jQuery);
