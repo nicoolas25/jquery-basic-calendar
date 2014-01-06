@@ -1,6 +1,60 @@
 (function($) {
 
   //
+  // Branchement dans jQuery
+  //
+
+  $.fn.bCalendar = function(optionsOrMethod) {
+
+    // Utiliser une même méthode pour l'intialisation ou les méthodes
+    // puis redistribuer selon le type du premier argument.
+
+    var _arguments = arguments;
+
+    if (typeof optionsOrMethod === "string")
+      this.each(function(_, element){
+        bCalendarMethodCall.apply($(element), _arguments);
+      });
+    else
+      this.each(function(_, element){
+        bCalendarInit.apply($(element), _arguments);
+      });
+
+    // Permettre le chainage en retournant this
+
+    return this;
+  };
+
+  $.fn.bCalendar.defaults = {
+    begin: moment().date(1),
+    events: function(_, callback){ callback([]) }
+  };
+
+  // Fonctions de notre plugin
+
+  function bCalendarInit(options) {
+
+    // Merge default params into options
+
+    options = $.extend({}, $.fn.bCalendar.defaults, options);
+
+    var calendar = new Calendar(this, options);
+    this.data('bCalendar', calendar);
+  };
+
+  function bCalendarMethodCall() {
+    var calendar = this.data('bCalendar');
+
+    if (calendar) {
+      var methodName = arguments[0];
+      var methodArgs = arguments.slice(1);
+      return calendar[methodName].apply(calendar, methodArgs);
+    }
+
+    throw "Please init the bCalendar before calling methods on it.";
+  };
+
+  //
   // Fonctions utilitaires
   //
 
@@ -149,51 +203,5 @@
   Calendar.prototype.getEvents = function(callback) {
     this.options.events(this.currentMoment, callback);
   }
-
-
-  // Fonctions de notre plugin
-
-  function bCalendarInit(options) {
-
-    // Merge default params into options
-
-    options = $.extend({}, {
-      begin: moment().date(1),
-      events: function(_, callback){ callback([]) }
-    }, options);
-
-    var calendar = new Calendar(this, options);
-    this.data('bCalendar', calendar);
-  };
-
-  function bCalendarMethodCall() {
-    var calendar = this.data('bCalendar');
-
-    if (calendar) {
-      var methodName = arguments[0];
-      var methodArgs = arguments.slice(1);
-      return calendar[methodName].apply(calendar, methodArgs);
-    }
-
-    throw "Please init the bCalendar before calling methods on it.";
-  };
-
-
-  // Branchement dans jQuery
-
-  $.fn.bCalendar = function(optionsOrMethod) {
-
-    // Utiliser une même méthode pour l'intialisation ou les méthodes
-    // puis redistribuer selon le type du premier argument.
-
-    if (typeof optionsOrMethod === "string")
-      bCalendarMethodCall.apply(this, arguments);
-    else
-      bCalendarInit.apply(this, arguments)
-
-    // Permettre le chainage en retournant this
-
-    return this;
-  };
 
 })(jQuery);

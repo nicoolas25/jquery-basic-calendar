@@ -11,7 +11,6 @@
         moment.lang('fr');
 
         var calendar = $("#calendar-widget").bCalendar({
-          begin: moment().date(1),
           events: function(startAt, callback) {
             callback([
               { date: moment(startAt).add(10, "days"), title: "Event 1" },
@@ -28,6 +27,7 @@
     </script>
     <style type="text/css">
       .bc-inactive { color: grey; }
+      .bc-event { font-weight: bold; }
       .bc-next, .bc-prev { cursor: pointer; }
     </style>
   </head>
